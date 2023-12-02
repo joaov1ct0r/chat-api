@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+    volumes:
+      - ./mysqlDataDev:/var/lib/mysql
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+
+  api_chat_dev:
+    container_name: api_chat_dev
+    build:
+      args:
+        - NODE_ENV=${NODE_ENV}
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: api_chat_dev
+    command: ["/usr/local/bin/npm", "run", "dev"]
+    volumes:
+      - ./api/src:/usr/src/app/src
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
+      - 3001:3001

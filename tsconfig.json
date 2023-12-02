@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "lib": [
+      "es6"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@App": ["src/app.ts"],
+      "@Database/*": ["src/database/*"],
+      "@Errors/*": ["src/errors/*"],
+      "@Controllers/*": ["src/controllers/*"],
+      "@Routers/*": ["src/routes/*"],
+      "@Validators/*": ["src/validators/*"],
+      "@Services/*": ["src/services/*"],
+      "@Interfaces/*": ["src/interfaces/*"],
+      "@Factories/*": ["src/factories/*"],
+      "@Utils/*": ["src/utils/*"],
+      "@Logger": ["src/logger.ts"],
+      "@Middlewares/*": ["src/middlewares/*"]
+    },
+    "allowJs": true,
+    "outDir": "build",
+    "rootDir": ".",
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "typeRoots": ["api/src/types"]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
+  "include": [
+    "**/**/**/*.ts",
+  ]
+}

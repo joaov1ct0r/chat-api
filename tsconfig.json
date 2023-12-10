@@ -32,7 +32,7 @@
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "typeRoots": ["api/src/types"]
+    "typeRoots": ["./src/types"]
   },
   "exclude": [
     "node_modules"
@@ -42,6 +42,6 @@
     "experimentalSpecifierResolution": "node"
   },
   "include": [
-    "**/**/**/*.ts",
+    "**/**/**/*.ts"
   ]
 }

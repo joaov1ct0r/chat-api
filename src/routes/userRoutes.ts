@@ -1,7 +1,7 @@
-import express from 'express'
-import UserFactory from '@Factories/userFactory'
+import {Router} from 'express'
+import {UserFactory} from '@Factories/userFactory'
 
-const userRouter: express.Router = express.Router()
+const userRouter: Router = Router()
 const userFactory: UserFactory = new UserFactory()
 const createUser = userFactory.create('create')
 const authenticateUser = userFactory.create('authenticate')

@@ -1,9 +1,11 @@
-import IJWT from '@Interfaces/IJwt'
+import { TokenImp } from "@Interfaces/TokenImp"
+import UserImp from "@Interfaces/UserImp"
 
 declare global {
   namespace Express {
     interface Request {
-      token: IJWT
+      token: TokenImp
+      user: UserImp
     }
   }
 }

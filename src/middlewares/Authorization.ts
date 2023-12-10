@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
-import BadRequest from '@Errors/BadRequest'
-import Forbidden from '@Errors/Forbidden'
-import jwt, { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken'
-import Unauthorized from '@Errors/Unauthorized'
-import {TokenImp} from '@Interfaces/TokenImp'
+import { BadRequest } from '@Errors/BadRequest'
+import { Forbidden } from '@Errors/Forbidden'
+import jwt from 'jsonwebtoken'
+import { Unauthorized } from '@Errors/Unauthorized'
+import { TokenImp } from '@Interfaces/TokenImp'
 
 export default class Authorization {
   execute(req: Request, res: Response, next: NextFunction) {
@@ -33,7 +33,11 @@ export default class Authorization {
           if (err && err.name === 'JsonWebTokenError') {
             throw new Unauthorized(err.message)
           }
-          if (err && err.name !== 'JsonWebTokenError' && err.name !== 'TokenExpiredError') {
+          if (
+            err &&
+            err.name !== 'JsonWebTokenError' &&
+            err.name !== 'TokenExpiredError'
+          ) {
             throw new Unauthorized('Erro na autenticação do token')
           }
 
@@ -42,6 +46,7 @@ export default class Authorization {
           next()
         },
       )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error && error.statusCode && error.message) {
         return res

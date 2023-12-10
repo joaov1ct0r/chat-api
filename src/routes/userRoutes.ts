@@ -1,5 +1,5 @@
-import {Router} from 'express'
-import {UserFactory} from '@Factories/userFactory'
+import { Router } from 'express'
+import { UserFactory } from '@Factories/userFactory'
 
 const userRouter: Router = Router()
 const userFactory: UserFactory = new UserFactory()

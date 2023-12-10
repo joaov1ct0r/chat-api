@@ -1,4 +1,3 @@
-import UserImp from '@Interfaces/UserImp'
 import { SafeParseReturnType, ZodObject, ZodRawShape } from 'zod'
 
 export interface BaseValidatorImp<T> {
@@ -18,4 +17,3 @@ export default abstract class BaseValidator<T> implements BaseValidatorImp<T> {
     return result as SafeParseReturnType<T, T>
   }
 }
-

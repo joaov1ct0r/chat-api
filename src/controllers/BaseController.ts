@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import {BadRequest} from '@Errors/BadRequest'
-import {Internal} from '@Errors/Internal'
-import {Forbidden} from '@Errors/Forbidden'
-import {Unauthorized} from '@Errors/Unauthorized'
+import { BadRequest } from '@Errors/BadRequest'
+import { Internal } from '@Errors/Internal'
+import { Forbidden } from '@Errors/Forbidden'
+import { Unauthorized } from '@Errors/Unauthorized'
 
 export abstract class BaseController {
   protected readonly _zod: typeof z
@@ -14,7 +14,7 @@ export abstract class BaseController {
   protected badRequest(message: string): BadRequest {
     return new BadRequest(message)
   }
-  
+
   protected internal(message: string): Internal {
     return new Internal(message)
   }

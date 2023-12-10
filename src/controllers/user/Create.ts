@@ -1,21 +1,27 @@
-import {BaseController} from '@Controllers/BaseController'
+import { BaseController } from '@Controllers/BaseController'
 import { UserValidatorImp } from '@Validators/UserValidator'
 import { CreateUserServiceImp } from '@Services/user/Create'
-import {UserImp} from '@Interfaces/UserImp'
+import { UserImp } from '@Interfaces/UserImp'
 import { BaseRequest } from '@Interfaces/BaseRequest'
 import { BaseResponse } from '@Interfaces/BaseResponse'
 
 export class CreateUserController extends BaseController {
   private readonly _validator: UserValidatorImp
   private readonly _createUserService: CreateUserServiceImp
-  
-  constructor(userValidator: UserValidatorImp, createUserService: CreateUserServiceImp) {
+
+  constructor(
+    userValidator: UserValidatorImp,
+    createUserService: CreateUserServiceImp,
+  ) {
     super()
     this._validator = userValidator
     this._createUserService = createUserService
   }
-  
-  public async handle(req: BaseRequest<UserImp>, res: BaseResponse<UserImp>): Promise<BaseResponse<UserImp>> {
+
+  public async handle(
+    req: BaseRequest<UserImp>,
+    res: BaseResponse<UserImp>,
+  ): Promise<BaseResponse<UserImp>> {
     const schema = this._zod.object({
       email: this._zod
         .string({ required_error: 'EMAIL É OBRIGATÓRIO' })
@@ -40,10 +46,11 @@ export class CreateUserController extends BaseController {
     const { data: user } = data
 
     const createdUser = await this._createUserService.execute(user)
-    
-    return res
-      .status(201)
-      .json({ resource: createdUser, status: 201, message: 'Usuário criado com sucesso!' })
+
+    return res.status(201).json({
+      resource: createdUser,
+      status: 201,
+      message: 'Usuário criado com sucesso!',
+    })
   }
-  
 }

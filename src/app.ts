@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import express, { Request } from 'express'
 import cookieParser from 'cookie-parser'
 import cors, { CorsOptions } from 'cors'
 import userRouter from './routes/userRoutes'
@@ -36,14 +36,14 @@ export default class App {
         return res.status(error.statusCode).json({
           message: error.message,
           status: error.statusCode,
-          error: error
+          error,
         })
       }
 
       return res.status(500).json({
         message: 'Internal Server error',
         status: 500,
-        error: error
+        error,
       })
     })
   }

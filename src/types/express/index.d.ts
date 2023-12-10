@@ -1,5 +1,5 @@
-import { TokenImp } from "@Interfaces/TokenImp"
-import UserImp from "@Interfaces/UserImp"
+import { TokenImp } from '@Interfaces/TokenImp'
+import UserImp from '@Interfaces/UserImp'
 
 declare global {
   namespace Express {

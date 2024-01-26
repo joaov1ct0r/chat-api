@@ -8,6 +8,9 @@
     "baseUrl": "./",
     "paths": {
       "@App": ["src/app.ts"],
+      "@Repositories/*": ["src/repositories/*"],
+      "@Mappers/*": ["src/mappers/*"],
+      "@Entities/*": ["src/entities/*"],
       "@Database/*": ["src/database/*"],
       "@Errors/*": ["src/errors/*"],
       "@Controllers/*": ["src/controllers/*"],

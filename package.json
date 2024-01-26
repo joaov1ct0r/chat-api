@@ -3,6 +3,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watchAll",
     "prepare": "husky install",
     "lint-staged": "lint-staged",
     "run": "docker compose up -d",
@@ -16,11 +17,6 @@
     "./api/src/**/**/*.ts": [
       "eslint --fix"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "license": "MIT",
   "dependencies": {
@@ -39,7 +35,8 @@
     "typeorm": "^0.3.10",
     "winston": "^3.10.0",
     "winston-daily-rotate-file": "^4.7.1",
-    "zod": "^3.22.2"
+    "zod": "^3.22.4",
+    "zod-validation-error": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",

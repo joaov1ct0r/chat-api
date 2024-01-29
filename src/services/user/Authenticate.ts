@@ -1,10 +1,11 @@
-import { FindUserByEmailRepositoryImp } from '@Database/repositories/user/FindByEmail'
-import { UserImp } from '@Interfaces/UserImp'
-import { BaseService } from '@Services/BaseService'
 import bcrypt from 'bcrypt'
+import { UserImp } from '@Entities/User'
+import { UserMap } from '@Mappers/UserMap'
+import { BaseService } from '@Services/BaseService'
+import { FindUserByEmailRepositoryImp } from '@Repositories/user/FindByEmail'
 
 export interface AuthenticateUserServiceImp {
-  execute(email: string, password: string): Promise<UserImp>
+  execute(email: string, password: string): Promise<Omit<UserImp, 'password'>>
 }
 
 export class AuthenticateUserService
@@ -18,11 +19,16 @@ export class AuthenticateUserService
     this._findUserByEmailRepository = findUserByEmailRepository
   }
 
-  public async execute(email: string, password: string): Promise<UserImp> {
+  public async execute(
+    email: string,
+    password: string,
+  ): Promise<Omit<UserImp, 'password'>> {
     const isUserAlreadyRegistered =
       await this._findUserByEmailRepository.execute(email)
 
-    if (!isUserAlreadyRegistered) {
+    const userWasntFound = isUserAlreadyRegistered === null
+
+    if (userWasntFound) {
       throw this.badRequest('Falha na autenticação!')
     }
 
@@ -31,10 +37,12 @@ export class AuthenticateUserService
       isUserAlreadyRegistered.password,
     )
 
-    if (!isUserPasswordCorrectly) {
+    const passwordIsntEqual = isUserPasswordCorrectly === false
+
+    if (passwordIsntEqual) {
       throw this.Unauthorized('Falha autenticação!')
     }
 
-    return isUserAlreadyRegistered
+    return UserMap.toDTO(isUserAlreadyRegistered)
   }
 }

@@ -1,42 +1,50 @@
-import { CreateUserRepositoryImp } from '@Database/repositories/user/Create'
-import { FindUserByEmailRepositoryImp } from '@Database/repositories/user/FindByEmail'
-import { UserImp } from '@Interfaces/UserImp'
-import { BaseService } from '@Services/BaseService'
 import bcrypt from 'bcrypt'
+import { UserImp } from '@Entities/User'
+import { UserMap } from '@Mappers/UserMap'
+import { BaseService } from '@Services/BaseService'
+import { CreateUserRepositoryImp } from '@Repositories/user/Create'
+import { FindUserByEmailRepositoryImp } from '@Repositories/user/FindByEmail'
 
 export interface CreateUserServiceImp {
-  execute(user: UserImp): Promise<UserImp>
+  execute(
+    user: Omit<UserImp, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Omit<UserImp, 'password'>>
 }
 
 export class CreateUserService
   extends BaseService
   implements CreateUserServiceImp
 {
-  private readonly _createUserRepository: CreateUserRepositoryImp
-  private readonly _findUserByEmailRepository: FindUserByEmailRepositoryImp
+  readonly #hashSalts: number
+  readonly #createUserRepository: CreateUserRepositoryImp
+  readonly #findUserByEmailRepository: FindUserByEmailRepositoryImp
 
   constructor(
     createUserRepository: CreateUserRepositoryImp,
     findUserByEmailRepository: FindUserByEmailRepositoryImp,
   ) {
     super()
-    this._createUserRepository = createUserRepository
-    this._findUserByEmailRepository = findUserByEmailRepository
+    this.#createUserRepository = createUserRepository
+    this.#findUserByEmailRepository = findUserByEmailRepository
+    this.#hashSalts = 12
   }
 
-  public async execute(user: UserImp): Promise<UserImp> {
-    const userAlreadyRegistered = await this._findUserByEmailRepository.execute(
-      user.email,
-    )
+  public async execute(
+    user: Omit<UserImp, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Omit<UserImp, 'password'>> {
+    const emailAlreadyRegistered =
+      await this.#findUserByEmailRepository.execute(user.email)
 
-    if (userAlreadyRegistered) {
-      throw this.badRequest('Usúario já cadastrado!')
+    const emailInUseByOtherUser = emailAlreadyRegistered !== null
+
+    if (emailInUseByOtherUser) {
+      throw this.badRequest('Email não disponivel')
     }
 
-    const salts = 12
-    user.password = bcrypt.hashSync(user.password, salts)
+    user.password = bcrypt.hashSync(user.password, this.#hashSalts)
 
-    const createdUser = await this._createUserRepository.execute(user)
-    return createdUser
+    const createdUser = await this.#createUserRepository.execute(user)
+
+    return UserMap.toDTO(createdUser)
   }
 }

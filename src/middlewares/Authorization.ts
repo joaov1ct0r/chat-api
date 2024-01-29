@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from 'express'
-import { BadRequest } from '@Errors/BadRequest'
-import { Forbidden } from '@Errors/Forbidden'
 import jwt from 'jsonwebtoken'
+import { TokenImp } from '@Entities/Token'
+import { Forbidden } from '@Errors/Forbidden'
+import { BadRequest } from '@Errors/BadRequest'
 import { Unauthorized } from '@Errors/Unauthorized'
-import { TokenImp } from '@Interfaces/TokenImp'
+import { NextFunction, Request, Response } from 'express'
 
-export default class Authorization {
+export class Authorization {
   execute(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.cookies.authorization) {
@@ -46,7 +46,6 @@ export default class Authorization {
           next()
         },
       )
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error && error.statusCode && error.message) {
         return res

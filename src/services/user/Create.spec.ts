@@ -1,9 +1,6 @@
-import { describe, expect, it } from '@jest/globals'
-import { sum } from '@Services/user/sum'
+import { describe, it } from '@jest/globals'
 
 describe('create user service', () => {
-  it('should sum', () => {
-    const result = sum(1, 1)
-    expect(result).toEqual(2)
-  })
+  it.todo('should throw bad request exception when email isnt available')
+  it.todo('should be able to create new user')
 })

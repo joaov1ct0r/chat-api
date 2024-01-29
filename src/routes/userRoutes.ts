@@ -1,10 +1,13 @@
 import { Router } from 'express'
-import { UserFactory } from '@Factories/userFactory'
+import {
+  UserControllerFactory,
+  UserControllerFactoryImp,
+} from '@Factories/UserControllerFactory'
 
 const userRouter: Router = Router()
-const userFactory: UserFactory = new UserFactory()
-const createUser = userFactory.create('create')
-const authenticateUser = userFactory.create('authenticate')
+const userFactory: UserControllerFactoryImp = new UserControllerFactory()
+const createUser = userFactory.create()
+const authenticateUser = userFactory.authenticate()
 
 userRouter.post('/login', (req, res, next) =>
   authenticateUser.handle(req, res).catch(next),

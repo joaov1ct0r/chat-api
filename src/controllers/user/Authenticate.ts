@@ -1,55 +1,54 @@
-import { BaseController } from '@Controllers/BaseController'
-import { BaseRequest } from '@Interfaces/BaseRequest'
+import { z } from 'zod'
+import { Request } from 'express'
+import { UserImp } from '@Entities/User'
 import { BaseResponse } from '@Interfaces/BaseResponse'
-import { UserImp } from '@Interfaces/UserImp'
-import { UserValidatorImp } from '@Validators/UserValidator'
-import { AuthenticateUserServiceImp } from '@Services/user/Authenticate'
+import { ZodBodyValidatorImp } from '@Validators/ZodBodyValidator'
 import { CreateUserTokenServiceImp } from '@Services/user/CreateToken'
+import { AuthenticateUserServiceImp } from '@Services/user/Authenticate'
 
-export class AuthenticateUserController extends BaseController {
+const authenticateUserRequestSchema = z.object({
+  email: z.string({ required_error: 'EMAIL É OBRIGATORIO' }),
+  password: z.string({ required_error: 'SENHA É OBRIGATORIO' }),
+})
+
+type AuthenticateUserDTO = z.infer<typeof authenticateUserRequestSchema>
+
+export class AuthenticateUserController {
   private readonly MAX_COOKIE_AGE
-  private readonly _validator: UserValidatorImp
-  private readonly _authenticateUserService: AuthenticateUserServiceImp
-  private readonly _createUserTokenService: CreateUserTokenServiceImp
+  readonly #validator: ZodBodyValidatorImp
+  readonly #authenticateUserService: AuthenticateUserServiceImp
+  readonly #createUserTokenService: CreateUserTokenServiceImp
 
   constructor(
-    validator: UserValidatorImp,
+    validator: ZodBodyValidatorImp,
     authenticateUserService: AuthenticateUserServiceImp,
     createUserTokenService: CreateUserTokenServiceImp,
   ) {
-    super()
-
     const MS = 1000
     const SECONDS = 60
     const TEN_MINUTES = 10 * SECONDS * MS
     this.MAX_COOKIE_AGE = TEN_MINUTES
 
-    this._validator = validator
-    this._authenticateUserService = authenticateUserService
-    this._createUserTokenService = createUserTokenService
+    this.#validator = validator
+    this.#authenticateUserService = authenticateUserService
+    this.#createUserTokenService = createUserTokenService
   }
 
   public async handle(
-    req: BaseRequest<UserImp>,
-    res: BaseResponse<UserImp>,
+    req: Request,
+    res: BaseResponse<Omit<UserImp, 'password'>>,
   ): Promise<BaseResponse<UserImp>> {
-    const schema = this._zod.object({
-      email: this._zod.string({ required_error: 'EMAIL É OBRIGATORIO' }),
-      password: this._zod.string({ required_error: 'SENHA É OBRIGATORIO' }),
-    })
+    const user = this.#validator.execute<AuthenticateUserDTO>(
+      authenticateUserRequestSchema,
+      req.body,
+    )
 
-    const data = this._validator.validate(schema, req.body)
+    const authenticatedUser = await this.#authenticateUserService.execute(
+      user.email,
+      user.password,
+    )
 
-    if (!data.success) {
-      throw this.badRequest(data.error.issues[0].message)
-    }
-
-    const { data: user } = data
-
-    const authenticatedUser: UserImp =
-      await this._authenticateUserService.execute(user.email, user.password)
-
-    const token = this._createUserTokenService.execute(authenticatedUser)
+    const token = this.#createUserTokenService.execute(authenticatedUser)
 
     res.cookie('authorization', `Bearer ${token}`, {
       maxAge: this.MAX_COOKIE_AGE,

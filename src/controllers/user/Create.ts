@@ -1,51 +1,47 @@
-import { BaseController } from '@Controllers/BaseController'
-import { UserValidatorImp } from '@Validators/UserValidator'
-import { CreateUserServiceImp } from '@Services/user/Create'
-import { UserImp } from '@Interfaces/UserImp'
-import { BaseRequest } from '@Interfaces/BaseRequest'
+import { z } from 'zod'
+import { Request } from 'express'
+import { UserImp } from '@Entities/User'
 import { BaseResponse } from '@Interfaces/BaseResponse'
+import { CreateUserServiceImp } from '@Services/user/Create'
+import { ZodBodyValidatorImp } from '@Validators/ZodBodyValidator'
 
-export class CreateUserController extends BaseController {
-  private readonly _validator: UserValidatorImp
-  private readonly _createUserService: CreateUserServiceImp
+const createUserRequestSchema = z.object({
+  email: z
+    .string({ required_error: 'EMAIL É OBRIGATÓRIO' })
+    .min(1, { message: 'EMAIL DEVE CONTER NO MÍNIMO 1 LETRA' }),
+  name: z
+    .string({ required_error: 'NOME É OBRIGATÓRIO' })
+    .min(1, { message: 'NOME DEVE CONTER NO MÍNIMO 1 LETRA' }),
+  dateBirth: z.date({ required_error: 'DATA DE NASCIMENTO É OBRIGATORIO' }),
+  password: z
+    .string({ required_error: 'SENHA É OBRIGATÓRIA' })
+    .min(1, { message: 'SENHA DEVE CONTER NO MÍNIMO 1 LETRA' }),
+})
+
+type CreateUserDTO = z.infer<typeof createUserRequestSchema>
+
+export class CreateUserController {
+  readonly #validator: ZodBodyValidatorImp
+  readonly #createUserService: CreateUserServiceImp
 
   constructor(
-    userValidator: UserValidatorImp,
+    userValidator: ZodBodyValidatorImp,
     createUserService: CreateUserServiceImp,
   ) {
-    super()
-    this._validator = userValidator
-    this._createUserService = createUserService
+    this.#validator = userValidator
+    this.#createUserService = createUserService
   }
 
   public async handle(
-    req: BaseRequest<UserImp>,
-    res: BaseResponse<UserImp>,
-  ): Promise<BaseResponse<UserImp>> {
-    const schema = this._zod.object({
-      email: this._zod
-        .string({ required_error: 'EMAIL É OBRIGATÓRIO' })
-        .min(1, { message: 'EMAIL DEVE CONTER NO MÍNIMO 1 LETRA' }),
-      name: this._zod
-        .string({ required_error: 'NOME É OBRIGATÓRIO' })
-        .min(1, { message: 'NOME DEVE CONTER NO MÍNIMO 1 LETRA' }),
-      dateBirth: this._zod.string({
-        required_error: 'DATA DE NASCIMENTO É OBRIGATÓRIA',
-      }),
-      password: this._zod
-        .string({ required_error: 'SENHA É OBRIGATÓRIA' })
-        .min(1, { message: 'SENHA DEVE CONTER NO MÍNIMO 1 LETRA' }),
-    })
+    req: Request,
+    res: BaseResponse<Omit<UserImp, 'password'>>,
+  ): Promise<BaseResponse<Omit<UserImp, 'password'>>> {
+    const user = this.#validator.execute<CreateUserDTO>(
+      createUserRequestSchema,
+      req.body,
+    )
 
-    const data = this._validator.validate(schema, req.body)
-
-    if (!data.success) {
-      throw this.badRequest(data.error.issues[0].message)
-    }
-
-    const { data: user } = data
-
-    const createdUser = await this._createUserService.execute(user)
+    const createdUser = await this.#createUserService.execute(user)
 
     return res.status(201).json({
       resource: createdUser,

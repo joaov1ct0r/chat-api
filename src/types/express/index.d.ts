@@ -1,11 +1,11 @@
-import { TokenImp } from '@Interfaces/TokenImp'
-import UserImp from '@Interfaces/UserImp'
+import { User } from '@Entities/User'
+import { Token } from '@Entities/Token'
 
 declare global {
   namespace Express {
     interface Request {
-      token: TokenImp
-      user: UserImp
+      token: Token
+      user: User
     }
   }
 }

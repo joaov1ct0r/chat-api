@@ -4,7 +4,7 @@ import { User } from '@Entities/User'
 import { MockInstance } from 'jest-mock'
 import { BadRequest } from '@Errors/BadRequest'
 import { Unauthorized } from '@Errors/Unauthorized'
-import { beforeAll, describe, expect, it, jest } from '@jest/globals'
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals'
 import { AuthenticateUserService } from '@Services/user/Authenticate'
 import { FindUserByEmailRepository } from '@Repositories/user/FindByEmail'
 
@@ -28,6 +28,10 @@ describe('authenticate user service [unit]', () => {
     )
 
     bcryptSpy = jest.spyOn(bcrypt, 'compareSync')
+  })
+
+  afterAll(() => {
+    jest.restoreAllMocks()
   })
 
   it('should throw bad request exception when user isnt found', async () => {

@@ -1,22 +1,20 @@
-import { UserImp } from '@Interfaces/UserImp'
-import jwt from 'jsonwebtoken'
 import ms from 'ms'
+import jwt from 'jsonwebtoken'
+import { UserImp } from '@Entities/User'
 
 export interface CreateUserTokenServiceImp {
-  execute(user: UserImp): string
+  execute(user: Omit<UserImp, 'password'>): string
 }
 
 export class CreateUserTokenService implements CreateUserTokenServiceImp {
   private readonly TOKEN_EXPIRES_IN
 
   constructor() {
-    const MS = 1000
-    const SECONDS = 60
-    const TEN_MINUTES = 10 * SECONDS * MS
-    this.TOKEN_EXPIRES_IN = TEN_MINUTES
+    const TEN_MINUTES = 10 * 60 * 1000
+    this.TOKEN_EXPIRES_IN = ms(TEN_MINUTES)
   }
 
-  public execute(user: UserImp): string {
+  public execute(user: Omit<UserImp, 'password'>): string {
     const token: string = jwt.sign(
       {
         userId: user.id,
@@ -24,7 +22,7 @@ export class CreateUserTokenService implements CreateUserTokenServiceImp {
         username: user.name,
       },
       process.env.JWT_TOKEN_SECRET as string,
-      { expiresIn: ms(this.TOKEN_EXPIRES_IN) },
+      { expiresIn: this.TOKEN_EXPIRES_IN },
     )
 
     return token

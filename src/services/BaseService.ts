@@ -1,6 +1,5 @@
 import { BadRequest } from '@Errors/BadRequest'
 import { Forbidden } from '@Errors/Forbidden'
-import { Internal } from '@Errors/Internal'
 import { Unauthorized } from '@Errors/Unauthorized'
 
 export abstract class BaseService {
@@ -10,10 +9,6 @@ export abstract class BaseService {
 
   protected Forbidden(message: string): Forbidden {
     return new Forbidden(message)
-  }
-
-  protected Internal(message: string): Internal {
-    return new Internal(message)
   }
 
   protected Unauthorized(message: string): Unauthorized {
